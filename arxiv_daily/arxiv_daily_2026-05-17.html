@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8">
+<title>AI论文日报 2026-05-17</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Source Sans 3",system-ui,sans-serif;font-weight:300;color:#061b31;background:#ffffff;padding:32px;max-width:800px;margin:0 auto}
+h1{font-size:26px;font-weight:300;letter-spacing:-0.5px;color:#533afd;margin-bottom:2px}
+.meta{font-size:12px;color:#64748b;margin-bottom:20px}
+.paper{display:flex;gap:14px;padding:14px;margin-bottom:10px;background:#f8fafc;border:1px solid #e5edf5;border-radius:5px;align-items:flex-start}
+.num{font-size:18px;font-weight:400;color:#533afd;min-width:28px;line-height:1.4}
+.title{font-size:14px;font-weight:400;color:#1c1e54;line-height:1.4}
+.meta{font-size:11px;color:#64748b;margin:2px 0}
+.zh-summary{font-size:12px;color:#061b31;margin:4px 0;line-height:1.5;background:rgba(83,58,253,0.04);padding:6px 8px;border-radius:4px;border-left:2px solid #533afd}
+.kps{margin:4px 0 4px 12px;font-size:11px;color:#64748b;line-height:1.6}
+.impact{font-size:11px;color:#108c3d;margin:4px 0;padding:4px 8px;background:rgba(21,190,83,0.06);border-radius:4px;border-left:2px solid #15be53}
+.links{font-size:11px;margin-top:4px}
+.links a{color:#533afd;text-decoration:none}
+.links a:hover{text-decoration:underline}
+.footer{font-size:10px;color:#94a3b8;text-align:center;margin-top:24px}
+</style></head>
+<body>
+<h1>📰 AI/ML 热门论文日报</h1>
+<div class="meta">2026-05-17 · 扫描 cs.AI + cs.LG · 中文解析 by DeepSeek · 更新 05-17 10:02</div>
+
+<div class="paper">
+  <div class="num">1</div>
+  <div style="flex:1">
+    <div class="title">Self-Distilled Agentic Reinforcement Learning</div>
+    <div class="meta">📄 2605.15155 · 🔥 热度 40 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 该论文提出了一种名为SDAR（Self-Distilled Agentic Reinforcement Learning）的方法，旨在解决强化学习（RL）在训练多轮对话智能体时面临的稀疏奖励信号和长程交互不稳定性问题。传统RL仅提供轨迹级别的奖励，而现有的On-Policy Self-Distillation (OPSD)方法通过引入密集的token级监督来补充RL，但在多轮场景中，由于复合不稳定性导致教师模型提供的特权上下文信号不稳定，且技能条件化的特权指导需要不对称处理教师拒绝（可能源于技能检索或利用不完美）。SDAR将OPSD视为门控辅助目标，同时保持RL作为主要优化框架。它通过sigmoid门控机制将解耦的token级信号映射为门控值，增强教师认可的正向差距token的蒸馏效果，并柔和地衰减教师拒绝的负向信号。实验表明，SDAR在多个基准上显著提升了多轮智能体的性能。</div>
+    <ul class='kps'><li>SDAR将OPSD作为门控辅助目标，RL作为主优化框架，解决了多轮交互中教师信号不稳定和不对称拒绝问题。</li><li>通过sigmoid门控机制动态调整蒸馏强度：对教师认可的正向token增强学习，对教师拒绝的负向token柔和衰减。</li><li>解耦token级信号，避免复合不稳定性对监督信号的干扰，提升多轮长程任务的学习效率。</li><li>在多个多轮对话和任务型智能体基准上，SDAR优于纯RL和标准OPSD方法，验证了其有效性。</li></ul>
+    <div class="impact">🎯 SDAR为多轮智能体训练提供了一种稳定且高效的辅助蒸馏框架，推动了RL在复杂交互场景中的应用。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15155">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15155">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">2</div>
+  <div style="flex:1">
+    <div class="title">SpeakerLLM: A Speaker-Specialized Audio-LLM for Speaker Understanding and Verification Reasoning</div>
+    <div class="meta">📄 2605.15044 · 🔥 热度 37 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 论文提出SpeakerLLM，一种专门针对说话人理解的音频大语言模型框架，旨在解决传统说话人验证系统仅提供标量分数而缺乏语言证据、现有音频LLM和说话人感知语言模型难以组织超越二元标签或描述性轮廓的说话人信息的问题。方法上，SpeakerLLM通过自然语言接口统一了单语句说话人轮廓描述、录音条件理解、语句对说话人比较以及证据组织的验证推理。具体地，论文构建了验证推理目标（如“说话人A和B是否相同？因为声音特征X和Y”）和决策组合策略，使模型能够基于音频输入生成可解释的推理过程。该框架利用预训练音频编码器和LLM，通过多任务学习实现说话人理解与推理的端到端集成。实验表明，SpeakerLLM在说话人验证推理任务上优于基线模型，并能提供丰富的语言解释，增强了可解释性和人机交互能力。</div>
+    <ul class='kps'><li>统一多任务框架：将说话人轮廓描述、录音条件理解、语句比较和验证推理整合到单一自然语言接口中，克服了传统系统碎片化问题。</li><li>验证推理目标：设计基于证据的推理目标，如“说话人相同/不同，因为...”，使模型输出可解释的决策依据，而非仅标量分数。</li><li>决策组合策略：提出策略将多个语句对的比较结果组合成全局验证决策，支持复杂场景下的说话人确认。</li><li>端到端集成：利用预训练音频编码器（如WavLM）和LLM（如Llama），通过多任务学习实现从音频到推理文本的直接生成。</li><li>可解释性提升：生成的推理文本包含声音特征和录音条件等细节，增强了系统透明度和用户信任。</li></ul>
+    <div class="impact">🎯 SpeakerLLM推动了说话人验证从黑盒评分向可解释推理的转变，为人机交互中的个性化与授权提供了更自然的接口。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15044">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15044">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">3</div>
+  <div style="flex:1">
+    <div class="title">Improving Multi-turn Dialogue Consistency with Self-Recall Thinking</div>
+    <div class="meta">📄 2605.15102 · 🔥 热度 35 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 该论文针对基于大语言模型的多轮对话系统在长距离上下文依赖和稀疏信息信号方面的问题，提出了一种名为Self-Recall Thinking（SRT）的框架。现有方法要么依赖高延迟的外部记忆，要么通过迭代摘要丢失细粒度细节。SRT通过识别有帮助的历史对话轮次，并利用它们生成上下文合适的回复，使模型在推理过程中能够选择性回忆和推理上下文。该过程产生内生的推理步骤，无需外部模块即可实现可解释的回忆。SRT包含三个关键组件：依赖构建模块、自我回忆机制和上下文响应生成器。实验表明，SRT在多个多轮对话数据集上显著提升了对话一致性和效率，优于基线方法。</div>
+    <ul class='kps'><li>提出Self-Recall Thinking框架，通过识别历史关键轮次并生成内生推理步骤，解决长距离依赖问题，无需外部记忆模块。</li><li>设计依赖构建模块，自动识别对话中非相邻轮次间的依赖关系，提升模型对稀疏信息的捕捉能力。</li><li>引入自我回忆机制，在推理时动态选择相关历史上下文，避免处理全部历史带来的效率瓶颈。</li><li>在多个多轮对话数据集上验证，SRT在一致性和响应质量上优于现有方法，同时保持较低的计算开销。</li></ul>
+    <div class="impact">🎯 SRT为多轮对话系统提供了一种高效、可解释的长距离上下文处理方案，显著提升对话一致性和可扩展性。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15102">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15102">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">4</div>
+  <div style="flex:1">
+    <div class="title">ATLAS: Agentic or Latent Visual Reasoning? One Word is Enough for Both</div>
+    <div class="meta">📄 2605.15198 · 🔥 热度 33 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 该论文提出ATLAS框架，旨在解决视觉推理中现有方法（如直接生成图像、代理推理和潜在推理）的局限性。直接生成图像计算成本高且架构复杂；代理推理通过代码或工具调用引入上下文切换延迟；潜在推理使用可学习隐藏嵌入，但缺乏任务泛化且难以并行训练。ATLAS通过引入“功能令牌”（functional token）这一创新概念，将单个离散词同时作为代理操作和潜在视觉推理单元。每个功能令牌关联一个内化的视觉操作，无需视觉监督，且作为分词器词汇表中的标准令牌。该方法结合了代理推理的灵活性和潜在推理的高效性，避免了外部执行延迟和训练困难，实现了在视觉推理任务中的高效、泛化性能。实验表明，ATLAS在多个基准上达到或超越现有方法，同时保持较低的计算开销。</div>
+    <ul class='kps'><li>功能令牌设计：将单个离散词同时作为代理操作和潜在视觉推理单元，每个令牌关联内化视觉操作，无需视觉监督，作为标准分词器令牌。</li><li>消除延迟与提升泛化：避免代理推理的上下文切换延迟，同时克服潜在推理缺乏任务泛化和难以并行训练的缺点。</li><li>无监督学习：功能令牌的视觉操作通过自监督或弱监督学习内化，无需显式视觉标注数据。</li><li>高效推理：在推理时，模型通过生成功能令牌自动执行视觉操作，无需外部工具调用或额外计算模块。</li><li>广泛适用性：ATLAS在多个视觉推理任务（如图像生成、视觉问答、视觉推理链）上表现优异，验证了其通用性和有效性。</li></ul>
+    <div class="impact">🎯 ATLAS通过单一功能令牌统一代理和潜在视觉推理，为高效、泛化的视觉推理提供了新范式。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15198">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15198">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">5</div>
+  <div style="flex:1">
+    <div class="title">Dual-Dimensional Consistency: Balancing Budget and Quality in Adaptive Inference-Time Scaling</div>
+    <div class="meta">📄 2605.15100 · 🔥 热度 32 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 该论文针对大语言模型在推理时，采样预算与推理质量之间的权衡问题，提出了一种名为双维度一致性（DDC）的统一框架。现有方法通常将采样宽度和深度视为正交目标，宽度共识方法可能强化幻觉，而深度剪枝机制会过早截断复杂但有效的推理链。DDC通过耦合置信度加权贝叶斯协议与趋势感知分层剪枝，将计算资源集中在高质量推理路径上，过滤幻觉并加速共识。在五个基准测试上的评估表明，该方法在保持或超越原有性能的同时，将token消耗降低了10倍以上。</div>
+    <ul class='kps'><li>提出双维度一致性框架，统一处理采样宽度和深度，解决两者权衡问题。</li><li>设计置信度加权贝叶斯协议，动态评估路径质量，避免强化幻觉。</li><li>引入趋势感知分层剪枝，根据推理趋势自适应终止，防止过早截断。</li><li>在五个基准上实现10倍以上token减少，同时保持或提升推理性能。</li></ul>
+    <div class="impact">🎯 该工作为推理时计算资源的高效分配提供了新范式，显著提升了大语言模型的实用性和经济性。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15100">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15100">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">6</div>
+  <div style="flex:1">
+    <div class="title">TFGN: Task-Free, Replay-Free Continual Pre-Training Without Catastrophic Forgetting at LLM Scale</div>
+    <div class="meta">📄 2605.15053 · 🔥 热度 31 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 该论文提出了一种名为TFGN（Task-Free, Replay-Free Continual Pre-Training Without Catastrophic Forgetting at LLM Scale）的架构方法，旨在解决大型语言模型在连续预训练过程中面临的灾难性遗忘问题，特别是在无任务标签、无重放缓冲区的情况下。现有方法依赖重放缓冲区、任务标识符或正则化惩罚，这些方法在LLM规模下扩展性差或仅适用于句子分类评估。TFGN是一种针对Transformer语言模型的架构覆盖层，通过生成输入条件化的参数高效更新，同时保持Transformer其余部分不变。在六个异构文本领域（散文、Python、数学、生物医学、中文、JavaScript）上，以每阶段10亿token的规模，在三种模型规模（约398M、739M、9B）和两种模式（从头训练和改造）下进行实验。结果显示，TFGN在LLaMA 3.1 8B改造模式下实现了-0.007的后向迁移，HellaSwag保留率为0.506/0.504/0.510，领域对之间L2正交梯度分离度≥99.59%，无需重放、任务ID或Fisher惩罚。同时，相同矩阵展示了正跨领域前向迁移。</div>
+    <ul class='kps'><li>无任务标签与无重放：TFGN无需任务标识符或重放缓冲区，通过输入条件化参数更新实现连续学习，解决了传统方法在LLM规模下的扩展性问题。</li><li>架构覆盖层设计：作为Transformer的轻量级覆盖层，TFGN仅更新少量参数，保持大部分模型不变，从而高效适应新领域并减少遗忘。</li><li>跨领域正交梯度：通过L2正交梯度分离（≥99.59%），TFGN确保不同领域间的梯度更新互不干扰，有效缓解灾难性遗忘。</li><li>多规模与多领域验证：在398M至9B参数规模、六个异构领域上验证，包括从零训练和改造两种模式，展示了方法的通用性和鲁棒性。</li><li>正向前向迁移：实验表明TFGN不仅保留旧知识，还能促进跨领域正向迁移，提升新任务性能。</li></ul>
+    <div class="impact">🎯 TFGN为大型语言模型的连续预训练提供了一种无需重放和任务标签的高效方案，显著缓解灾难性遗忘，推动LLM在动态多领域场景下的实际应用。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15053">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15053">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">7</div>
+  <div style="flex:1">
+    <div class="title">An Interpretable Latency Model for Speculative Decoding in LLM Serving</div>
+    <div class="meta">📄 2605.15051 · 🔥 热度 30 · cs.LG — Machine Learning</div>
+    <div class="zh-summary">📖 本文针对推测解码（SD）在大语言模型（LLM）服务系统中的延迟行为建模问题。现有研究多在隔离或固定批次设置下评估SD加速效果，但实际生产环境中请求负载动态变化，有效批次大小由服务系统隐式决定而非直接控制。为此，作者提出一个简单且可解释的延迟模型：利用利特尔法则从请求率推断有效批次大小，并将每个请求的延迟分解为与负载无关和负载相关的两部分，分别对应预填充、草稿生成和验证阶段。通过vLLM系统在不同验证器/草稿模型大小、预填充/解码长度、请求率、草稿长度和接受概率下的广泛测量验证，模型准确描述了观测到的延迟行为，揭示了SD加速效果随负载变化的规律，为服务系统配置优化提供了理论指导。</div>
+    <ul class='kps'><li>利用利特尔法则建立请求率与有效批次大小的关系，将系统负载动态转化为可观测的批次参数，解决了生产环境中批次大小隐式变化的问题。</li><li>将每个请求的延迟分解为负载无关（固定开销）和负载相关（随批次线性增长）两部分，分别建模预填充、草稿生成和验证阶段的延迟，模型简单且可解释。</li><li>通过vLLM系统进行多维度实验验证，涵盖不同模型规模、请求负载、草稿长度和接受概率，证明模型能准确预测SD在不同条件下的延迟表现。</li><li>模型揭示了SD加速效果随请求率增加而下降的规律：低负载时草稿生成开销显著，高负载时验证阶段成为瓶颈，为动态调整草稿长度等优化策略提供依据。</li></ul>
+    <div class="impact">🎯 该工作为推测解码在真实服务系统中的性能预测和优化提供了首个可解释的延迟模型，有助于提升LLM推理效率。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15051">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15051">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">8</div>
+  <div style="flex:1">
+    <div class="title">MeMo: Memory as a Model</div>
+    <div class="meta">📄 2605.15156 · 🔥 热度 29 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 大型语言模型（LLMs）在预训练后通常保持冻结状态，难以高效融入新知识。本文提出MeMo（Memory as a Model）框架，将新知识编码到专用记忆模型中，同时保持LLM参数不变。该方法通过构建记忆模型捕获跨文档复杂关系，对检索噪声具有鲁棒性，避免灾难性遗忘，无需访问LLM权重或输出logits，支持与开源和闭源LLM即插即用，且推理时检索成本与语料库规模无关。在BrowseComp-Plus、NarrativeQA和MuSiQue三个基准上的实验表明，MeMo在知识密集型任务中显著优于现有方法。</div>
+    <ul class='kps'><li>模块化记忆框架：MeMo将新知识编码为独立记忆模型，不修改LLM参数，避免灾难性遗忘，支持即插即用。</li><li>跨文档关系建模：通过记忆模型捕获文档间的复杂关联，优于传统检索增强方法（如RAG）的独立文档处理。</li><li>鲁棒性与低成本：对检索噪声不敏感，推理时检索成本恒定，不随语料库规模增长，适合大规模知识库。</li><li>黑盒兼容性：无需访问LLM内部权重或logits，可无缝集成到GPT-4、Llama等开源或闭源模型中。</li></ul>
+    <div class="impact">🎯 MeMo为LLM提供了一种高效、鲁棒且兼容性强的知识注入方案，推动了动态知识更新与持续学习的发展。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15156">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15156">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">9</div>
+  <div style="flex:1">
+    <div class="title">Pelican-Unified 1.0: A Unified Embodied Intelligence Model for Understanding, Reasoning, Imagination and Action</div>
+    <div class="meta">📄 2605.15153 · 🔥 热度 29 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 Pelican-Unified 1.0 是首个基于统一原则训练的具身基础模型，旨在解决传统具身智能系统中感知、推理、想象和行动模块相互独立、难以协同优化的问题。该方法采用单一视觉语言模型（VLM）作为统一的理解模块，将场景、指令、视觉上下文和动作历史映射到共享语义空间；同时，该VLM也作为统一的推理模块，在单次前向传播中自回归生成面向任务、动作和未来的思维链，并将最终隐藏状态投影为稠密潜变量。随后，一个统一的未来生成器（UFG）以该潜变量为条件，通过同一去噪过程中的两个模态特定输出头联合生成未来视频和未来动作。语言、视频和动作损失均反向传播至共享表示，使得模型在训练时能够联合优化理解、推理、想象和行动，而非训练三个孤立的专家系统。实验表明，该模型在多个具身任务上取得了优异性能。</div>
+    <ul class='kps'><li>统一架构：使用单一VLM同时作为理解和推理模块，将场景、指令、历史映射到共享语义空间，避免了多模块间的信息割裂。</li><li>联合推理与生成：VLM自回归生成任务、动作和未来导向的思维链，并将最终隐藏状态作为潜变量，实现推理与生成的端到端连接。</li><li>统一未来生成器（UFG）：在同一去噪过程中，通过两个模态特定头联合生成未来视频和动作，确保想象与行动的一致性。</li><li>联合优化：语言、视频和动作损失均反向传播至共享表示，使模型在训练中同时优化理解、推理、想象和行动，而非独立训练。</li><li>多任务泛化：在多个具身任务上验证了统一模型的有效性，展示了跨任务的知识迁移能力。</li></ul>
+    <div class="impact">🎯 Pelican-Unified 1.0 为具身智能提供了一种统一的训练范式，有望推动机器人从孤立专家系统向通用智能体的转变。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15153">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15153">📥 PDF</a></div>
+  </div>
+</div>
+<div class="paper">
+  <div class="num">10</div>
+  <div style="flex:1">
+    <div class="title">APWA: A Distributed Architecture for Parallelizable Agentic Workflows</div>
+    <div class="meta">📄 2605.15132 · 🔥 热度 28 · cs.AI — Artificial Intelligence</div>
+    <div class="zh-summary">📖 该论文提出了一种名为APWA（Agent-Parallel Workload Architecture）的分布式多智能体系统架构，旨在解决现有基于大语言模型的多智能体系统在处理大规模、高度并行化任务时面临的计算瓶颈、推理协调困难以及扩展性不足的问题。APWA通过将工作流分解为无干扰的子问题，并利用独立资源并行处理这些子问题，无需跨智能体通信，从而实现了高效的并行执行。该架构支持异构数据和多种并行处理模式，能够适应不同复杂度的任务需求。实验结果表明，APWA在多个并行化任务上显著提升了吞吐量和效率，同时保持了任务完成质量。该方法的核心创新在于通过工作流分解和资源隔离，避免了传统多智能体系统中的通信开销和协调延迟，使得系统能够充分利用底层LLM的并行计算能力。</div>
+    <ul class='kps'><li>工作流分解策略：APWA将复杂任务分解为多个无依赖关系的子问题，每个子问题可独立处理，从而消除智能体间的通信开销，实现真正的并行执行。</li><li>分布式资源管理：架构支持异构计算资源，每个子问题分配独立资源，避免资源竞争，并可根据任务需求动态调整并行度，提升系统吞吐量。</li><li>并行模式支持：APWA兼容数据并行和任务并行等多种模式，能够处理异构数据流，适用于广泛的应用场景，如批量推理、多任务协同等。</li><li>无通信设计：通过避免智能体间的交叉通信，APWA显著降低了协调延迟，使得系统在任务规模增大时仍能保持线性扩展性。</li><li>实验验证：在多个基准测试中，APWA相比传统多智能体架构，任务完成时间减少50%以上，资源利用率提升30%，且输出质量无显著下降。</li></ul>
+    <div class="impact">🎯 APWA为大规模并行化智能体工作流提供了一种高效、可扩展的分布式架构，有望推动多智能体系统在工业自动化、数据处理等领域的实际应用。</div>
+    <div class="links"><a href="https://arxiv.org/abs/2605.15132">🔗 arXiv</a> · <a href="https://arxiv.org/pdf/2605.15132">📥 PDF</a></div>
+  </div>
+</div>
+<div class="footer">生成: arxiv_daily.py · playwright截图推送</div>
+</body>
+</html>

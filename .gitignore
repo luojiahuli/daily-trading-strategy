@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+.hermes/
+
+# 数据缓存
+daily_reports/pingan/pingan_data.csv
+daily_reports/pingan/pingan_raw_*.csv
+daily_reports/podcast/
+daily_reports/images/
+daily_reports/stories/
+
+# 临时
+.tmp/
+.ipynb_checkpoints/
+
+# 大文件
+*.png
+*.jpg
+*.jpeg
+*.mp3
+*.mp4
+*.csv
+*.db
+
+# 但保留示例
+!daily_reports/*/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
