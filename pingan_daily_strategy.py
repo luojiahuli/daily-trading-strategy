@@ -758,6 +758,9 @@ def push_to_feishu(chart_path, text_content, creds):
     app_id = creds.get("FEISHU_APP_ID", "")
     app_secret = creds.get("FEISHU_APP_SECRET", "")
     chat_id = creds.get("FEISHU_CHAT_ID", "")
+    if not chat_id:
+        print("[!] 飞书CHAT_ID未配置")
+        return
 
     if not app_id or not app_secret:
         print("[!] 飞书凭据未配置")

@@ -10,44 +10,53 @@ __pycache__/
 daily_reports/pingan/pingan_data.csv
 daily_reports/pingan/pingan_raw_*.csv
 daily_reports/pingan/*.png
+daily_reports/podcast/
+daily_reports/stories/
+daily_reports/images/
+daily_reports/*.txt
+daily_reports/*.html
+daily_reports/*.json
+arxiv_daily/*.html
+arxiv_daily/*.png
 
 # 临时文件
 .tmp/
 .ipynb_checkpoints/
 
+# 媒体文件
+*.mp3
+*.mp4
+*.png
+*.jpg
+*.jpeg
+
+# 日志
+*.log
+
 # OS
 .DS_Store
 Thumbs.db
-# 非此项目的文件
+.cache/
+
+# 非此仓库的其他项目文件
 Premier-League-API/
 football_predictor/
 hermesbot/
-live_trading/
 liverpool_analysis/
 neighborhood_watch/
 room_watch/
 tracking_history/
 viz_output/
 wealth_guide/
+live_trading/
 downloaded_files/
-.cache/
-daily_reports/daily_*
-daily_reports/*.txt
-daily_reports/*.html
-daily_reports/*.json
-arxiv_daily/
+trading_record/
 *.swift
 libai_*
-cam_capture.py
 capture_photo*
-feishu_push.py
-gen_*.py
-generate_*.py
-morning_routine.py
-push_*.py
-rebuild_*.py
-stock_*.py
-test_*.py
+analyze_*
 xiaohongshu_*.md
-analyze_*.py
-add_*.py
+xiaohongshu_*.png
+cover_*.png
+music_*.mp3
+song_maker.py
