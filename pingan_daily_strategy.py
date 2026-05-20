@@ -41,9 +41,9 @@ def load_env():
                         creds[k.strip()] = v.strip()
     return creds
 
-# ── 1. 数据抓取 ──
+# ── 1. 数据抓取（三级降级: akshare → 新浪 → 腾讯 → 旧缓存）──
 def fetch_data(years=3):
-    """抓取日K线数据并计算技术指标，支持重试和缓存"""
+    """抓取日K线数据并计算技术指标，支持重试和多级降级"""
     import akshare as ak
     import time
     import requests
@@ -70,20 +70,35 @@ def fetch_data(years=3):
 
         # 只抓取缺失的数据
         missing_start = (last_date + timedelta(days=1)).strftime("%Y%m%d")
-        if missing_start < end.strftime("%Y%m%d"):
-            df_new = ak.stock_zh_a_hist(
-                symbol=SYMBOL, period="daily",
-                start_date=missing_start,
-                end_date=end.strftime("%Y%m%d"),
-                adjust="qfq"
-            )
-            if not df_new.empty:
-                df_new = df_new.rename(columns={
-                    "日期": "date", "开盘": "open", "收盘": "close",
-                    "最高": "high", "最低": "low", "成交量": "volume",
-                    "成交额": "amount", "振幅": "amplitude",
-                    "涨跌幅": "pct_chg", "涨跌额": "change", "换手率": "turnover"
-                })
+        should_fetch = missing_start < end.strftime("%Y%m%d")
+        
+        if should_fetch:
+            # 尝试akshare
+            try:
+                df_new = ak.stock_zh_a_hist(
+                    symbol=SYMBOL, period="daily",
+                    start_date=missing_start, end_date=end.strftime("%Y%m%d"),
+                    adjust="qfq"
+                )
+            except Exception as e:
+                print(f"    ⚠ akshare增量更新失败: {e}")
+                df_new = pd.DataFrame()
+            
+            # akshare失败，尝试新浪
+            if df_new.empty:
+                df_new = _fetch_sina_kline(SYMBOL, years)
+                if df_new is not None and not df_new.empty:
+                    print(f"    → 新浪API增量获取: {len(df_new)} 行")
+            
+            # 新浪也失败，尝试腾讯
+            if df_new is None or df_new.empty:
+                df_new = _fetch_tencent_kline(SYMBOL)
+                if df_new is not None and not df_new.empty:
+                    print(f"    → 腾讯API增量获取: {len(df_new)} 行")
+            
+            # 有新增数据，合并
+            if df_new is not None and not df_new.empty:
+                df_old["date"] = pd.to_datetime(df_old["date"])
                 df_new["date"] = pd.to_datetime(df_new["date"])
                 df = pd.concat([df_old, df_new]).drop_duplicates(subset=["date"]).sort_values("date").reset_index(drop=True)
                 df.to_csv(DATA_CACHE, index=False)
@@ -95,7 +110,96 @@ def fetch_data(years=3):
         df = _add_technical_indicators(df_old)
         return df
 
-    # 全新抓取，带重试
+    # 全新抓取（无缓存）
+    df = _fetch_new_full_data(SYMBOL, years)
+    if df is not None:
+        df.to_csv(cache_path, index=False)
+        df.to_csv(DATA_CACHE, index=False)
+        df = _add_technical_indicators(df)
+        return df
+    
+    raise Exception("所有数据源均不可用")
+
+
+def _fetch_sina_kline(symbol, years=3):
+    """新浪API获取日K线"""
+    import requests
+    url = f"https://quotes.sina.cn/cn/api/jsonp_v2.php/var%20_%20/CN_MarketData.getKLineData?symbol=sh{symbol}&scale=240&datalen={years*252+60}"
+    try:
+        r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+        text = r.text
+        text = text[text.index("["):text.rindex("]")+1]
+        data = json.loads(text)
+        rows = []
+        for item in data:
+            rows.append({
+                "date": item["day"],
+                "open": float(item["open"]),
+                "high": float(item["high"]),
+                "low": float(item["low"]),
+                "close": float(item["close"]),
+                "volume": int(float(item["volume"])),
+            })
+        df = pd.DataFrame(rows)
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.sort_values("date").reset_index(drop=True)
+        df["pct_chg"] = df["close"].pct_change() * 100
+        df["amplitude"] = (df["high"] - df["low"]) / df["close"].shift(1) * 100
+        df["amplitude"] = df["amplitude"].fillna(0)
+        df["turnover"] = 0
+        df["amount"] = df["volume"] * df["close"]
+        return df
+    except Exception as e:
+        print(f"    ⚠ 新浪API失败: {e}")
+        return None
+
+
+def _fetch_tencent_kline(symbol):
+    """腾讯财经API获取日K线（非交易时间更可靠）"""
+    import requests
+    url = f"https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh{symbol},day,,,730"
+    try:
+        r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
+        data = r.json()
+        if data.get("code") != 0:
+            return None
+        kline_data = data.get("data", {}).get(f"sh{symbol}", {}).get("day", [])
+        if not kline_data:
+            kline_data = data.get("data", {}).get(f"sh{symbol}", {}).get("qfqday", [])
+        if not kline_data:
+            return None
+        rows = []
+        for item in kline_data:
+            rows.append({
+                "date": item[0],
+                "open": float(item[1]),
+                "close": float(item[2]),
+                "high": float(item[3]),
+                "low": float(item[4]),
+                "volume": int(float(item[5])),
+            })
+        df = pd.DataFrame(rows)
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.sort_values("date").reset_index(drop=True)
+        df["pct_chg"] = df["close"].pct_change() * 100
+        df["amplitude"] = (df["high"] - df["low"]) / df["close"].shift(1) * 100
+        df["amplitude"] = df["amplitude"].fillna(0)
+        df["turnover"] = 0
+        df["amount"] = df["volume"] * df["close"]
+        return df
+    except Exception as e:
+        print(f"    ⚠ 腾讯API失败: {e}")
+        return None
+
+
+def _fetch_new_full_data(symbol, years=3):
+    """无缓存时全新抓取（akshare → 新浪 → 腾讯三级降级）"""
+    import akshare as ak
+    import time
+    end = datetime.now()
+    start = end - timedelta(days=years*365 + 60)
+    
+    # 1. akshare
     for attempt in range(3):
         try:
             df = ak.stock_zh_a_hist(
@@ -105,75 +209,36 @@ def fetch_data(years=3):
                 adjust="qfq"
             )
             if not df.empty:
-                break
-        except Exception as e:
-            print(f"    ⚠ 第{attempt+1}次尝试失败: {e}")
-            if attempt < 2:
-                time.sleep(3)
-    else:
-        # 全失败，尝试新浪API作为fallback
-        print(f"    → akshare失败，尝试新浪API...")
-        try:
-            url = f"https://quotes.sina.cn/cn/api/jsonp_v2.php/var%20_%20/CN_MarketData.getKLineData?symbol=sh{SYMBOL}&scale=240&datalen={years*252+60}"
-            r = requests.get(url, timeout=15, headers={"User-Agent": "Mozilla/5.0"})
-            text = r.text
-            # 去掉JSONP包裹
-            text = text[text.index("["):text.rindex("]")+1]
-            data = json.loads(text)
-            rows = []
-            for item in data:
-                rows.append({
-                    "date": item["day"],
-                    "open": float(item["open"]),
-                    "high": float(item["high"]),
-                    "low": float(item["low"]),
-                    "close": float(item["close"]),
-                    "volume": int(float(item["volume"])),
+                df = df.rename(columns={
+                    "日期": "date", "开盘": "open", "收盘": "close",
+                    "最高": "high", "最低": "low", "成交量": "volume",
+                    "成交额": "amount", "振幅": "amplitude",
+                    "涨跌幅": "pct_chg", "涨跌额": "change", "换手率": "turnover"
                 })
-            df = pd.DataFrame(rows)
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True)
-            # 计算模拟的涨跌幅
-            df["pct_chg"] = df["close"].pct_change() * 100
-            df["amplitude"] = (df["high"] - df["low"]) / df["pre_close"] * 100 if "pre_close" in df.columns else (df["high"] - df["low"]) / df["close"].shift(1) * 100
-            df["amplitude"] = df["amplitude"].fillna(0)
-            df["turnover"] = 0
-            df["amount"] = df["volume"] * df["close"]
-            print(f"    → 新浪API获取成功: {len(df)} 行")
-            # 保存缓存
-            df.to_csv(cache_path, index=False)
-            df.to_csv(DATA_CACHE, index=False)
-            df = _add_technical_indicators(df)
-            return df
-        except Exception as e2:
-            print(f"    ⚠ 新浪API也失败: {e2}")
-
-        # 都失败，用旧缓存
-        if os.path.exists(DATA_CACHE):
-            df = pd.read_csv(DATA_CACHE)
-            df["date"] = pd.to_datetime(df["date"])
-            print(f"    → 使用旧缓存（API不可用）")
-            df = _add_technical_indicators(df)
-            return df
-        raise Exception("无法获取数据")
-
-    # 重命名
-    df = df.rename(columns={
-        "日期": "date", "开盘": "open", "收盘": "close",
-        "最高": "high", "最低": "low", "成交量": "volume",
-        "成交额": "amount", "振幅": "amplitude",
-        "涨跌幅": "pct_chg", "涨跌额": "change", "换手率": "turnover"
-    })
-    df["date"] = pd.to_datetime(df["date"])
-    df = df.sort_values("date").reset_index(drop=True)
-
-    # 保存缓存
-    df.to_csv(cache_path, index=False)
-    df.to_csv(DATA_CACHE, index=False)  # 同时更新主缓存
-
-    # 计算技术指标
-    df = _add_technical_indicators(df)
-    return df
+                df["date"] = pd.to_datetime(df["date"])
+                df = df.sort_values("date").reset_index(drop=True)
+                print(f"    → akshare获取成功: {len(df)} 行")
+                return df
+        except Exception as e:
+            print(f"    ⚠ akshare第{attempt+1}次失败: {e}")
+            time.sleep(3)
+    
+    # 2. 新浪
+    print(f"    → 尝试新浪API...")
+    df = _fetch_sina_kline(symbol, years)
+    if df is not None and len(df) > 100:
+        print(f"    → 新浪API获取成功: {len(df)} 行")
+        return df
+    
+    # 3. 腾讯
+    print(f"    → 尝试腾讯API...")
+    df = _fetch_tencent_kline(symbol)
+    if df is not None and len(df) > 100:
+        print(f"    → 腾讯API获取成功: {len(df)} 行")
+        return df
+    
+    print(f"    ❌ 所有数据源均失败")
+    return None
 
 def _add_technical_indicators(df):
     """计算常用技术指标"""

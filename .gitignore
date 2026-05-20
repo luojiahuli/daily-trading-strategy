@@ -3,32 +3,45 @@ __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+dist/
+build/
+
+# Environment & Secrets
 .env
-.hermes/
+*.env.local
+*.token
+credentials.json
 
-# 数据缓存
-daily_reports/pingan/pingan_data.csv
-daily_reports/pingan/pingan_raw_*.csv
-daily_reports/pingan/*.png
+# Data & Cache
+.cache/
+*.db
+*.sqlite
+*.sqlite3
+trading_data/
+live_trading/daily_log.txt
+live_trading/simulation_state.json
 
-# 临时文件
-.tmp/
-.ipynb_checkpoints/
+# Output
+viz_output/*.html
+viz_output/*.png
+daily_reports/images/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# 其他项目文件（不属此仓库）
-arxiv_daily.py
-arxiv_daily/
-arxiv_story_xiaohongshu.py
-daily_live_trading.py
-daily_podcast_recommend.py
-stock_tracker.py
-stock_tracker/
-room_watch.py
-football_predictor/
-hermesbot/
-liverpool_analysis/
-wealth_guide/
+# Embedded repos (submodules)
+credit-loan-analytics/
+Premier-League-API/
+football-predictor/
+
+# Logs
+*.log
+cron_log.txt
