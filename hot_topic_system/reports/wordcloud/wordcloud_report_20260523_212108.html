@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热点话题词云报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+        .header { background: linear-gradient(135deg, #1e293b, #334155); padding: 24px 32px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; font-weight: 600; background: linear-gradient(90deg, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .time { color: #94a3b8; font-size: 13px; }
+        .platform-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; padding: 20px 32px; }
+        .platform-card { background: #1e293b; border-radius: 10px; padding: 16px; border: 1px solid #334155; }
+        .platform-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: #f59e0b; }
+        .platform-count { font-size: 12px; color: #94a3b8; margin-bottom: 8px; }
+        .platform-kw { font-size: 11px; color: #64748b; line-height: 1.6; }
+        .viz-section { padding: 20px 32px; }
+        .viz-title { font-size: 14px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .viz-img { width: 100%; border-radius: 12px; border: 1px solid #334155; margin-bottom: 24px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .footer { text-align: center; padding: 24px; color: #64748b; font-size: 12px; border-top: 1px solid #334155; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔥 热点话题词云报告</h1>
+        <span class="time">2026-05-23 21:21</span>
+    </div>
+    
+    <div class="platform-cards">
+        
+        <div class="platform-card" style="border-left: 4px solid #ff6b6b">
+            <div class="platform-name">微博</div>
+            <div class="platform-count">5 条话题 · 5 个关键词</div>
+            <div class="platform-kw">关键词: A股三大指数集体跳水, 特斯拉全自动驾驶入华, 多地取消限购政策, 年轻人开始疯狂存钱, AI人才薪资暴涨200</div>
+        </div>
+        <div class="platform-card" style="border-left: 4px solid #4ecdc4">
+            <div class="platform-name">知乎</div>
+            <div class="platform-count">5 条话题 · 6 个关键词</div>
+            <div class="platform-kw">关键词: 当前经济形势下, 普通人如何资产保值, AI大模型是否会重蹈互联网泡沫覆辙, 中国新能源车全球竞争力深度分析, 为什么年轻人越来越不愿意结婚, A股见底的逻辑与信号分析</div>
+        </div>
+        <div class="platform-card" style="border-left: 4px solid #ff6b9d">
+            <div class="platform-name">小红书</div>
+            <div class="platform-count">5 条话题 · 8 个关键词</div>
+            <div class="platform-kw">关键词: 极简生活一年, 我存下了20万, A股跌麻了, 给自己的生活降级, 被裁员后, 我选择去旅居, 普通人如何配置家庭资产, 我发现一个存钱神器</div>
+        </div>
+        <div class="platform-card" style="border-left: 4px solid #ffd93d">
+            <div class="platform-name">脉脉</div>
+            <div class="platform-count">5 条话题 · 9 个关键词</div>
+            <div class="platform-kw">关键词: 某大厂突然裁员30, 赔偿方案曝光, 应届生offer被毁, 约谈中, 现在跳槽AI方向还来得及吗, 某车企取消加班文化, 员工反应, 裸辞3个月还没找到工作</div>
+        </div>
+        <div class="platform-card" style="border-left: 4px solid #5ac8c8">
+            <div class="platform-name">豆瓣</div>
+            <div class="platform-count">30 条话题 · 71 个关键词</div>
+            <div class="platform-kw">关键词: 电影, 图书, 音乐, We, 肖申克的救赎, 霸王别姬, 泰坦尼克号, 阿甘正传</div>
+        </div>
+    </div>
+    
+    <div class="viz-section">
+        <div class="viz-title">📊 各平台词云对比</div>
+        <img class="viz-img" src="wordcloud_platforms_20260523_212108.png" alt="各平台词云">
+    </div>
+    
+    <div class="viz-section">
+        <div class="viz-title">📈 关键词频次对比 TOP30</div>
+        <img class="viz-img" src="keyword_bars_20260523_212108.png" alt="关键词对比">
+    </div>
+    
+    <div class="viz-section">
+        <div class="viz-title">🔥 平台-关键词热力图</div>
+        <img class="viz-img" src="platform_keyword_heatmap_20260523_212108.png" alt="热力图">
+    </div>
+    
+    <div class="footer">
+        热点话题词云报告 | 数据来源：微博/知乎/小红书/脉脉/豆瓣 | 2026-05-23 21:21
+    </div>
+</body>
+</html>
