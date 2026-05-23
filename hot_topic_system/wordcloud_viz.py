@@ -19,9 +19,34 @@ from matplotlib import font_manager as fm
 from wordcloud import WordCloud
 import numpy as np
 
-# 设置中文字体
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'PingFang SC', 'STHeiti', 'SimHei']
-plt.rcParams['axes.unicode_minus'] = False
+# 尝试多个中文字体
+import matplotlib.font_manager as fm
+_font_cache = {}
+
+def get_chinese_font():
+    """获取可用的中文字体"""
+    if _font_cache:
+        return _font_cache
+    
+    candidates = [
+        '/System/Library/Fonts/STHeiti Light.ttc',
+        '/System/Library/Fonts/STHeiti Medium.ttc',
+        '/System/Library/Fonts/PingFang.ttc',
+        '/System/Library/Fonts/Hiragino Sans GB.ttc',
+    ]
+    
+    for path in candidates:
+        if os.path.exists(path):
+            prop = fm.FontProperties(fname=path)
+            _font_cache['matplotlib'] = prop
+            _font_cache['wordcloud'] = path
+            return _font_cache
+    
+    # 回退到系统默认
+    return None
+
+# 预加载字体
+get_chinese_font()
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -140,11 +165,15 @@ def plot_platform_wordclouds(all_topics_by_platform: dict, output_path: str):
         cols, rows = 3, 3
         fig_size = (18, 15)
     
+    # 设置字体
+    font_info = get_chinese_font()
+    font_prop = font_info['matplotlib'] if font_info and 'matplotlib' in font_info else None
+
     fig, axes = plt.subplots(rows, cols, figsize=fig_size)
     axes = axes.flatten() if n > 1 else [axes]
-    
+
     # 标题
-    fig.suptitle('🔥 各平台热点话题词云', fontsize=18, fontweight='bold', y=0.98)
+    fig.suptitle('各平台热点话题词云', fontsize=18, fontweight='bold', y=0.98, fontproperties=font_prop)
     
     for i, (platform, topics) in enumerate(all_topics_by_platform.items()):
         ax = axes[i]
@@ -156,8 +185,8 @@ def plot_platform_wordclouds(all_topics_by_platform: dict, output_path: str):
         # 提取关键词
         word_freq = extract_keywords(topics)
         if not word_freq:
-            ax.text(0.5, 0.5, f'{pname}\n(无数据)', ha='center', va='center', fontsize=14)
-            ax.set_title(f'{pname}', fontsize=14, color=pcolor, fontweight='bold', pad=10)
+            ax.text(0.5, 0.5, f'{pname}\n(无数据)', ha='center', va='center', fontsize=14, fontproperties=font_prop)
+            ax.set_title(f'{pname}', fontsize=14, color=pcolor, fontweight='bold', pad=10, fontproperties=font_prop)
             continue
         
         # 生成词云
@@ -170,8 +199,11 @@ def plot_platform_wordclouds(all_topics_by_platform: dict, output_path: str):
         r = 140
         mask[((x - cx) ** 2 + (y - cy) ** 2) <= r ** 2] = 255
         
+        font_info = get_chinese_font()
+        font_path = font_info['wordcloud'] if font_info else None
+
         wc = WordCloud(
-            font_path=None,
+            font_path=font_path,
             background_color='white',
             mask=mask,
             max_words=50,
@@ -183,7 +215,7 @@ def plot_platform_wordclouds(all_topics_by_platform: dict, output_path: str):
         wc.generate(text)
         
         ax.imshow(wc.to_array())
-        ax.set_title(f'{pname} · {len(topics)}条话题', fontsize=13, color=pcolor, fontweight='bold', pad=8)
+        ax.set_title(f'{pname} · {len(topics)}条话题', fontsize=13, color=pcolor, fontweight='bold', pad=8, fontproperties=font_prop)
         ax.set_axis_off()
     
     # 隐藏多余的子图
@@ -210,21 +242,25 @@ def plot_keyword_bar_chart(all_topics_by_platform: dict, output_path: str):
     top_words = [w for w, c in all_words.most_common(30)]
     
     fig, ax = plt.subplots(figsize=(14, 8))
-    
+
+    # 设置中文字体
+    font_info = get_chinese_font()
+    font_prop = font_info['matplotlib'] if font_info and 'matplotlib' in font_info else None
+
     x = np.arange(len(top_words))
     bar_width = 0.15
-    
+
     for i, (platform, topics) in enumerate(all_topics_by_platform.items()):
         word_freq = extract_keywords(topics)
         counts = [word_freq.get(w, 0) for w in top_words]
         color = PLATFORM_COLORS.get(platform, '#888')
         ax.barh(x + i * bar_width, counts, bar_width, label=PLATFORM_NAMES.get(platform, platform), color=color, alpha=0.8)
-    
+
     ax.set_yticks(x + bar_width * (len(platforms) - 1) / 2)
-    ax.set_yticklabels(top_words, fontsize=11)
-    ax.set_xlabel('出现频次', fontsize=12)
-    ax.set_title('📊 各平台热点关键词对比 TOP30', fontsize=16, fontweight='bold', pad=15)
-    ax.legend(loc='lower right', fontsize=10)
+    ax.set_yticklabels(top_words, fontsize=11, fontproperties=font_prop)
+    ax.set_xlabel('出现频次', fontsize=12, fontproperties=font_prop)
+    ax.set_title('各平台热点关键词对比 TOP30', fontsize=16, fontweight='bold', pad=15, fontproperties=font_prop)
+    ax.legend(loc='lower right', fontsize=10, prop=font_prop)
     ax.invert_yaxis()
     
     plt.tight_layout()
@@ -253,14 +289,18 @@ def plot_platform_heatmap(all_topics_by_platform: dict, output_path: str):
     matrix = np.array(matrix)
     
     fig, ax = plt.subplots(figsize=(14, 6))
-    
+
+    # 设置中文字体
+    font_info = get_chinese_font()
+    font_prop = font_info['matplotlib'] if font_info and 'matplotlib' in font_info else None
+
     im = ax.imshow(matrix, cmap='YlOrRd', aspect='auto')
-    
+
     ax.set_xticks(np.arange(len(top_words)))
     ax.set_yticks(np.arange(len(platforms)))
     ax.set_xticklabels(top_words, rotation=45, ha='right', fontsize=10)
-    ax.set_yticklabels([PLATFORM_NAMES.get(p, p) for p in platforms], fontsize=11)
-    
+    ax.set_yticklabels([PLATFORM_NAMES.get(p, p) for p in platforms], fontsize=11, fontproperties=font_prop)
+
     # 添加数值标签
     for i in range(len(platforms)):
         for j in range(len(top_words)):
@@ -268,9 +308,9 @@ def plot_platform_heatmap(all_topics_by_platform: dict, output_path: str):
             if val > 0:
                 text_color = 'white' if val > matrix.max() * 0.5 else 'black'
                 ax.text(j, i, str(val), ha='center', va='center', color=text_color, fontsize=8)
-    
+
     plt.colorbar(im, ax=ax, label='出现频次')
-    ax.set_title('🔥 平台-关键词热力图', fontsize=16, fontweight='bold', pad=15)
+    ax.set_title('平台-关键词热力图', fontsize=16, fontweight='bold', pad=15, fontproperties=font_prop)
     
     plt.tight_layout()
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

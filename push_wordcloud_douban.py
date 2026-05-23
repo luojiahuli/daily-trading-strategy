@@ -114,14 +114,10 @@ def main():
     douban_path = args.douban_path
 
     if not wc_path:
-        # 词云截图
-        wc_path = find_latest("wordcloud_report_*.png", "~/workspace/hot_topic_system/reports/wordcloud")
-        wc_path = os.path.expanduser(wc_path) if wc_path else None
+        wc_path = find_latest("wordcloud_report_*.png", os.path.expanduser("~/workspace/hot_topic_system/reports/wordcloud"))
 
     if not douban_path:
-        # 豆瓣报告
-        douban_path = find_latest("douban_*.png", "~/workspace/douban_reports")
-        douban_path = os.path.expanduser(douban_path) if douban_path else None
+        douban_path = find_latest("douban_*.png", os.path.expanduser("~/workspace/douban_reports"))
 
     print(f"📊 词云报告: {wc_path or '未找到'}")
     print(f"🎬 豆瓣报告: {douban_path or '未找到'}")
